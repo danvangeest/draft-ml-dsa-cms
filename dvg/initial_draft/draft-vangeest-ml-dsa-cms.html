@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Greek,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Use of the ML-DSA Signature Algorithm in the Cryptographic Message Syntax (CMS)</title>
+<meta content="Daniel Van Geest" name="author">
+<meta content="Michael Prorock" name="author">
+<meta content="Mike Ounsworth" name="author">
+<meta content="
+       This document specifies the conventions for using the Module-Lattice-Based Digital Signatures (ML-DSA) algorithm with the Cryptographic Message Syntax (CMS). 
+    " name="description">
+<meta content="xml2rfc 3.19.4" name="generator">
+<meta content="Dilithium" name="keyword">
+<meta content="ML-DSA" name="keyword">
+<meta content="draft-vangeest-ml-dsa-cms-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.19.4
+    Python 3.11.6
+    ConfigArgParse 1.7
+    google-i18n-address 3.1.0
+    intervaltree 3.1.0
+    Jinja2 3.1.2
+    lxml 4.9.3
+    platformdirs 4.2.0
+    pycountry 22.3.5
+    PyYAML 6.0.1
+    requests 2.31.0
+    setuptools 68.2.2
+    six 1.16.0
+    wcwidth 0.2.13
+-->
+<link href="draft-vangeest-ml-dsa-cms.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 1;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl.olPercent {
+  --indent: 5ch;
+}
+dl > dt {
+  float: left;
+  margin-right: 2ch;
+  min-width: 8ch;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+dl.olPercent > dt {
+  min-width: calc(var(--indent) - 2ch);
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href].selfRef, .iref + a[href].internal {
+  color: var(--text-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  min-width: var(--identifier-width);
+  clear: left;
+  float: left;
+  text-align: right;
+  margin-right: 1ch;
+}
+#identifiers dd {
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 2px 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 10ch;
+  margin-right: 1.5ch;
+}
+.references dt:target::before {
+  content: "⇒";
+  width: 15px;
+  margin: 0 10px 0 -25px;
+}
+.references dd {
+  margin-left: 12ch !important;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+  .toplink {
+    display: none;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">ML-DSA in CMS</td>
+<td class="right">February 2024</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Van Geest, et al.</td>
+<td class="center">Expires 25 August 2024</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-vangeest-ml-dsa-cms-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2024-02-22" class="published">22 February 2024</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2024-08-25">25 August 2024</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">D. Van Geest</div>
+<div class="org">CryptoNext Security</div>
+</div>
+<div class="author">
+      <div class="author-name">M. Prorock</div>
+<div class="org">mesur.io</div>
+</div>
+<div class="author">
+      <div class="author-name">M. Ounsworth</div>
+<div class="org">Entrust Limited</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Use of the ML-DSA Signature Algorithm in the Cryptographic Message Syntax (CMS)</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document specifies the conventions for using the Module-Lattice-Based Digital Signatures (ML-DSA) algorithm with the Cryptographic Message Syntax (CMS).<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-vangeest-ml-dsa-cms/">https://datatracker.ietf.org/doc/draft-vangeest-ml-dsa-cms/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/danvangeest/draft-ml-dsa-cms">https://github.com/danvangeest/draft-ml-dsa-cms</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 25 August 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2024 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-asn1" class="internal xref">ASN.1</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-ml-dsa-signature-algorithm" class="internal xref">ML-DSA Signature Algorithm</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-algorithm-identifiers" class="internal xref">Algorithm Identifiers</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-ml-dsa-algorithm-identifier" class="internal xref">ML-DSA Algorithm Identifiers</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-message-digest-algorithm-id" class="internal xref">Message Digest Algorithm Identifiers</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-ml-dsa-signatures" class="internal xref">ML-DSA Signatures</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-signed-data-conventions" class="internal xref">Signed Data Conventions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-signed-data-conventions-wit" class="internal xref">Signed-data Conventions with Signed Attributes</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-signed-data-conventions-with" class="internal xref">Signed-data Conventions without Signed Attributes</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">Module-Lattice-Based Digital Signatures (ML-DSA) is a quantum-resistant digital signature scheme standardized in <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> [EDNOTE: <span>[<a href="#FIPS204-ipd" class="cite xref">FIPS204-ipd</a>]</span> until officially published] by the US National Institute of Standards and Technology (NIST) PQC project <span>[<a href="#NIST-PQC" class="cite xref">NIST-PQC</a>]</span>.  This document specifies the conventions for using ML-DSA with the Cryptographic Message Syntax (CMS) <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span> signed-data content type.<a href="#section-1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="asn1">
+<section id="section-2.1">
+        <h3 id="name-asn1">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-asn1" class="section-name selfRef">ASN.1</a>
+        </h3>
+<p id="section-2.1-1">CMS values are generated using ASN.1 <span>[<a href="#X680" class="cite xref">X680</a>]</span>, using the Basic Encoding Rules (BER) and the Distinguished Encoding Rules (DER) <span>[<a href="#X690" class="cite xref">X690</a>]</span>.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="ml-dsa-signature-algorithm">
+<section id="section-3">
+      <h2 id="name-ml-dsa-signature-algorithm">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-ml-dsa-signature-algorithm" class="section-name selfRef">ML-DSA Signature Algorithm</a>
+      </h2>
+<p id="section-3-1"><span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> defines parameter sets for ML-DSA at three security levels: ML-DSA-44, ML-DSA-65, and ML-DSA-87.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Table 3 in <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> gives the targeted security strength for the NIST PQC Project <span>[<a href="#NIST-PQC" class="cite xref">NIST-PQC</a>]</span>. ML-DSA-44 targets category 2 - at least as hard as a collision search on 256-bit hash function, e.g. SHA3-256 <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span>.  ML-DSA-65 targets category 3 - at least as hard as a key search on block cipher with 192-bit key, e.g. AES-192 <span>[<a href="#FIPS197" class="cite xref">FIPS197</a>]</span>.  ML-DSA-87 targets category 5 - at least as hard as a key search on block cipher with 256-bit key, e.g. AES-256 <span>[<a href="#FIPS197" class="cite xref">FIPS197</a>]</span>.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<div id="algorithm-identifiers">
+<section id="section-3.1">
+        <h3 id="name-algorithm-identifiers">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-algorithm-identifiers" class="section-name selfRef">Algorithm Identifiers</a>
+        </h3>
+<p id="section-3.1-1">Each algorithm is identified by an object identifier, and the algorithm identifier may contain parameters if needed.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">The ALGORITHM definition is repeated here for convenience:<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-3">
+<pre>
+   ALGORITHM ::= CLASS {
+       &amp;id    OBJECT IDENTIFIER UNIQUE,
+       &amp;Type  OPTIONAL }
+     WITH SYNTAX {
+       OID &amp;id [PARMS &amp;Type] }
+</pre><a href="#section-3.1-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="ml-dsa-algorithm-identifiers">
+<section id="section-3.2">
+        <h3 id="name-ml-dsa-algorithm-identifier">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-ml-dsa-algorithm-identifier" class="section-name selfRef">ML-DSA Algorithm Identifiers</a>
+        </h3>
+<p id="section-3.2-1">The ML-DSA signature algorithm is defined in <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span>, and the conventions for encoding the public key are defined in <span>[<a href="#I-D.ietf-lamps-dilithium-certificates" class="cite xref">I-D.ietf-lamps-dilithium-certificates</a>]</span>.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">The id-ML-DSA-44, id-ML-DSA-65, and id-ML-DSA-87 object identifiers are used to identify ML-DSA public keys in certificates.  The object identifiers are specified in <span>[<a href="#I-D.ietf-lamps-dilithium-certificates" class="cite xref">I-D.ietf-lamps-dilithium-certificates</a>]</span>, and they are repeated here for convenience:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-3">
+<pre>
+   id-ML-DSA-44 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+             country(16) us(840) organization(1) gov(101) csor(3)
+             nistAlgorithm(4) sigAlgs(3) TBD }
+
+   id-ML-DSA-65 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+             country(16) us(840) organization(1) gov(101) csor(3)
+             nistAlgorithm(4) sigAlgs(3) TBD }
+
+   id-ML-DSA-87 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+             country(16) us(840) organization(1) gov(101) csor(3)
+             nistAlgorithm(4) sigAlgs(3) TBD }
+</pre><a href="#section-3.2-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="message-digest-algorithm-identifiers">
+<section id="section-3.3">
+        <h3 id="name-message-digest-algorithm-id">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-message-digest-algorithm-id" class="section-name selfRef">Message Digest Algorithm Identifiers</a>
+        </h3>
+<p id="section-3.3-1">When the signer includes signed attributes, a message digest algorithm is used to compute the message digest on the eContent value.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">ML-DSA uses both SHAKE128 and SHAKE256 <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span> internally as part of the signing operation.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">When using ML-DSA to sign a message digest, Section 7.1 [TODO: make sure this doesn't change] of <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> requires that the approved hash function or extendable-output function provides at least λ bits of classical security strength against both collision and second preimage attacks. The values for λ is specified in Table 1 [TODO: make sure this doesn't change] of <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> and is summarized here in <a href="#ml-dsa-collision-strength" class="auto internal xref">Table 1</a>.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<span id="name-ml-dsa-collision-strength"></span><div id="ml-dsa-collision-strength">
+<table class="center" id="table-1">
+          <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-ml-dsa-collision-strength" class="selfRef">ML-DSA λ - collision strength</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Algorithm</th>
+              <th class="text-left" rowspan="1" colspan="1">λ - collision strength</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ML-DSA-44</td>
+              <td class="text-left" rowspan="1" colspan="1">128</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ML-DSA-65</td>
+              <td class="text-left" rowspan="1" colspan="1">192</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">ML-DSA-87</td>
+              <td class="text-left" rowspan="1" colspan="1">256</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<p id="section-3.3-5">ML-DSA uses both SHAKE128 and SHAKE256 <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span> internally as part of the signing operation.  Table 4 of <span>[<a href="#FIPS202" class="cite xref">FIPS202</a>]</span> includes the security strength of SHAKE128 and SHAKE256 and the relevant parts are summarized here in <a href="#shake-strength" class="auto internal xref">Table 2</a>.<a href="#section-3.3-5" class="pilcrow">¶</a></p>
+<span id="name-shake-security-strength"></span><div id="shake-strength">
+<table class="center" id="table-2">
+          <caption>
+<a href="#table-2" class="selfRef">Table 2</a>:
+<a href="#name-shake-security-strength" class="selfRef">SHAKE security strength</a>
+          </caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Function</th>
+              <th class="text-left" rowspan="1" colspan="1">Output Size</th>
+              <th class="text-left" rowspan="1" colspan="1">Collision Strength</th>
+              <th class="text-left" rowspan="1" colspan="1">2nd Preimage Strength</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">SHAKE128</td>
+              <td class="text-left" rowspan="1" colspan="1">d</td>
+              <td class="text-left" rowspan="1" colspan="1">min(d/2, 128)</td>
+              <td class="text-left" rowspan="1" colspan="1">min(d, 128)</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">SHAKE256</td>
+              <td class="text-left" rowspan="1" colspan="1">d</td>
+              <td class="text-left" rowspan="1" colspan="1">min(d/2, 256)</td>
+              <td class="text-left" rowspan="1" colspan="1">min(d, 256)</td>
+            </tr>
+          </tbody>
+        </table>
+</div>
+<p id="section-3.3-7">When signing with ML-DSA-44, the message digest algorithm <span class="bcp14">MUST</span> be SHAKE128.  When signing with ML-DSA-65, the message digest algorithm <span class="bcp14">MUST</span> be SHAKE256.  When signing with ML-DSA-87, the message digest algorithm <span class="bcp14">MUST</span> be SHAKE256.  To avoid complexity in algorithm identifier encodings, the message digest algorithm used for ML-DSA-65 is stronger than strictly necessary.<a href="#section-3.3-7" class="pilcrow">¶</a></p>
+<p id="section-3.3-8"><span>[<a href="#RFC8702" class="cite xref">RFC8702</a>]</span> defines the use of SHAKE128 and SHAKE258 in CMS.  The object identifiers are reproduced here for convenience:<a href="#section-3.3-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.3-9">
+<pre>
+   id-shake128 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+             country(16) us(840) organization(1) gov(101) csor(3)
+             nistAlgorithm(4) 2 11 }
+
+   id-shake256 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+             country(16) us(840) organization(1) gov(101) csor(3)
+             nistAlgorithm(4) 2 12 }
+</pre><a href="#section-3.3-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3.3-10">As described in <span>[<a href="#RFC8702" class="cite xref">RFC8702</a>]</span>, when using the id-shake128 or id-shake256 algorithm identifier, the OID encoding <span class="bcp14">MUST</span> omit the parameters field and the output length of SHAKE128 or SHAKE256 as the message digest <span class="bcp14">MUST</span> be 32 or 64 bytes, respectively.<a href="#section-3.3-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ml-dsa-signatures">
+<section id="section-3.4">
+        <h3 id="name-ml-dsa-signatures">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-ml-dsa-signatures" class="section-name selfRef">ML-DSA Signatures</a>
+        </h3>
+<p id="section-3.4-1">The id-ML-DSA-44, id-ML-DSA-65, and id-ML-DSA-87 object identifiers are also used for signature values.  When used to identify signature algorithms, the AlgorithmIdentifier parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-2">The data to be signed is processed using ML-DSA, and then a private key operation generates the signature value.  As described in Algorithm 20 [TODO: make sure this doesn't change] of <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span>, the sigEncode() algorithm encodes the signature into an opaque byte string. As described in Section 5.3 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>, the signature value is ASN.1 encoded as an OCTET STRING and included in the signature field of SignerInfo.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="signed-data-conventions">
+<section id="section-4">
+      <h2 id="name-signed-data-conventions">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-signed-data-conventions" class="section-name selfRef">Signed Data Conventions</a>
+      </h2>
+<p id="section-4-1">The processing depends on whether the signer includes signed attributes.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The inclusion of signed attributes is preferred, but the conventions for signed-data without signed attributes are provided for completeness.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<div id="signed-data-conventions-with-signed-attributes">
+<section id="section-4.1">
+        <h3 id="name-signed-data-conventions-wit">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-signed-data-conventions-wit" class="section-name selfRef">Signed-data Conventions with Signed Attributes</a>
+        </h3>
+<p id="section-4.1-1">[ EDNOTE: I based this section and the next on 3.1 and 3.2 from RFC 8419.  Should it instead be based on section 4 from draft-ietf-lamps-cms-sphincs-plus? ]<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">The SignedData digestAlgorithms field includes the identifiers of the message digest algorithms used by one or more signer.  There <span class="bcp14">MAY</span> be any number of elements in the collection, including zero.  When signing with ML-DSA-44, the digestAlgorithm <span class="bcp14">SHOULD</span> include id-shake128.  When signing with ML-DSA-65 or ML-DSA-87, the digestAlgorithm <span class="bcp14">SHOULD</span> include id-shake256.  In all cases the algorithm parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">The SignerInfo digestAlgorithm field includes the identifier of the message digest algorithms used by the signer.  When signing with
+ML-DSA-44, the digestAlgorithm <span class="bcp14">MUST</span> be id-shake128.  When signing with ML-DSA-65 or ML-DSA-87, the digestAlgorithm <span class="bcp14">MUST</span> be id-shake256.  In all cases the algorithm parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">The SignerInfo signedAttributes <span class="bcp14">MUST</span> include the message-digest attribute as specified in Section 11.2 of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span>.  When signing with ML-DSA-44, the message-digest attribute <span class="bcp14">MUST</span> contain the message digest computed over the eContent value using SHAKE128 with 32 bytes of output.  When signing with ML-DSA-65 or ML-DSA-87, the message-digest attribute <span class="bcp14">MUST</span> contain the message digest computed over the eContent value using SHAKE256 with 64 bytes of output.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.1-5">The SignerInfo signatureAlgorithm field <span class="bcp14">MUST</span> contain either id-ML-DSA-44, id-ML-DSA-65, or id-ML-DSA-87, depending on the ML-DSA parameter set that was used by the signer.  The algorithm parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.1-6">The SignerInfo signature field contains the octet string resulting from the ML-DSA private key signing operation.<a href="#section-4.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="signed-data-conventions-without-signed-attributes">
+<section id="section-4.2">
+        <h3 id="name-signed-data-conventions-with">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-signed-data-conventions-with" class="section-name selfRef">Signed-data Conventions without Signed Attributes</a>
+        </h3>
+<p id="section-4.2-1">The SignedData digestAlgorithms field includes the identifiers of the message digest algorithms used by one or more signer.  There <span class="bcp14">MAY</span> be any number of elements in the collection, including zero.  When signing with ML-DSA-44, the list of identifiers <span class="bcp14">MAY</span> include id-shake128, and if present, the algorithm parameters field <span class="bcp14">MUST</span> be absent.  When signing with ML-DSA-65 or ML-DSA-87, the list of identifiers <span class="bcp14">MAY</span> include id-shake256, and if present, the algorithm parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">The SignerInfo digestAlgorithm field includes the identifier of the message digest algorithms used by the signer.  When signing with ML-DSA-44, the digestAlgorithm <span class="bcp14">MUST</span> be id-shake128.  When signing with ML-DSA-65 or ML-DSA-87, the digestAlgorithm <span class="bcp14">MUST</span> be id-shake256.  In all cases the algorithm parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2-3">
+<pre>
+  NOTE: Either id-sha512 or id-shake256 is used as part to the
+  private key signing operation.  However, the private key signing
+  operation does not take a message digest computed with one of
+  these algorithms as an input.
+</pre><a href="#section-4.2-3" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-4">The SignerInfo signatureAlgorithm field <span class="bcp14">MUST</span> contain either id-ML-DSA-44, id-ML-DSA-65, or id-ML-DSA-87, depending on the ML-DSA parameter set that was used by the signer.  The algorithm parameters field <span class="bcp14">MUST</span> be absent.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<p id="section-4.2-5">The SignerInfo signature field contains the octet string resulting from the ML-DSA private key signing operation.<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-5">
+      <h2 id="name-security-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-5-1">The Security Considerations section of <span>[<a href="#RFC5652" class="cite xref">RFC5652</a>]</span> applies to this specification as well.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">ML-DSA is specified for use in Public Key Infrastructure X.509 (PKIX) certificates and Certificate Revocation Lists (CRLs) in <span>[<a href="#I-D.ietf-lamps-dilithium-certificates" class="cite xref">I-D.ietf-lamps-dilithium-certificates</a>]</span>.  The Security Considerations section from there apply to this specification as well.<a href="#section-5-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-6">
+      <h2 id="name-iana-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-6-1">This document has no IANA actions.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="FIPS202">[FIPS202]</dt>
+        <dd>
+<span class="refAuthor">Dworkin, M.</span>, <span class="refAuthor">Dworkin, M. J.</span>, and <span class="refAuthor">NIST</span>, <span class="refTitle">"SHA-3 Standard: Permutation-Based Hash and Extendable-Output Functions"</span>, <span class="seriesInfo">FIPS PUB 202</span>, <span class="seriesInfo">NIST Federal Information Processing Standards Publications 202</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.202</span>, <span class="seriesInfo">DOI 10.6028/NIST.FIPS.202</span>, <time datetime="2015-08" class="refDate">August 2015</time>, <span>&lt;<a href="http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf">http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS204">[FIPS204]</dt>
+        <dd>
+<span class="refTitle">"TBD"</span>, <span>n.d.</span>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS204-ipd">[FIPS204-ipd]</dt>
+        <dd>
+<span class="refAuthor">National Institute of Standards and Technology (NIST)</span>, <span class="refTitle">"Module-Lattice-Based Digital Signature Standard"</span>, <time datetime="2023-08-24" class="refDate">24 August 2023</time>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.ipd.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.ipd.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-lamps-dilithium-certificates">[I-D.ietf-lamps-dilithium-certificates]</dt>
+        <dd>
+<span class="refAuthor">Massimo, J.</span>, <span class="refAuthor">Kampanakis, P.</span>, <span class="refAuthor">Turner, S.</span>, and <span class="refAuthor">B. Westerbaan</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Algorithm Identifiers for ML-DSA"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-dilithium-certificates-03</span>, <time datetime="2024-02-05" class="refDate">5 February 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-dilithium-certificates-03">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-dilithium-certificates-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5652">[RFC5652]</dt>
+        <dd>
+<span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">STD 70</span>, <span class="seriesInfo">RFC 5652</span>, <span class="seriesInfo">DOI 10.17487/RFC5652</span>, <time datetime="2009-09" class="refDate">September 2009</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5652">https://www.rfc-editor.org/rfc/rfc5652</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8702">[RFC8702]</dt>
+        <dd>
+<span class="refAuthor">Kampanakis, P.</span> and <span class="refAuthor">Q. Dang</span>, <span class="refTitle">"Use of the SHAKE One-Way Hash Functions in the Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">RFC 8702</span>, <span class="seriesInfo">DOI 10.17487/RFC8702</span>, <time datetime="2020-01" class="refDate">January 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8702">https://www.rfc-editor.org/rfc/rfc8702</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="X680">[X680]</dt>
+        <dd>
+<span class="refAuthor">International Telephone and Telegraph Consultative Committee</span>, <span class="refTitle">"Abstract Syntax Notation One (ASN.1): Specification of basic notation"</span>, <span class="seriesInfo">CCITT Recommendation X.680</span>, <time datetime="2002-07" class="refDate">July 2002</time>. </dd>
+<dd class="break"></dd>
+<dt id="X690">[X690]</dt>
+      <dd>
+<span class="refAuthor">International Telephone and Telegraph Consultative Committee</span>, <span class="refTitle">"ASN.1 encoding rules: Specification of basic encoding Rules (BER), Canonical encoding rules (CER) and Distinguished encoding rules (DER)"</span>, <span class="seriesInfo">CCITT Recommendation X.690</span>, <time datetime="2002-07" class="refDate">July 2002</time>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="FIPS197">[FIPS197]</dt>
+        <dd>
+<span class="refAuthor">NIST</span>, <span class="refTitle">"Advanced encryption standard (AES)"</span>, <span class="seriesInfo">NIST Federal Information Processing Standards Publications 197</span>, <span class="seriesInfo">DOI 10.6028/NIST.FIPS.197</span>, <time datetime="2001-11" class="refDate">November 2001</time>, <span>&lt;<a href="https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf">https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="NIST-PQC">[NIST-PQC]</dt>
+        <dd>
+<span class="refAuthor">National Institute of Standards and Technology</span>, <span class="refTitle">"Post-Quantum Cryptography Project"</span>, <time datetime="2016-12-20" class="refDate">20 December 2016</time>, <span>&lt;<a href="https://csrc.nist.gov/projects/post-quantum-cryptography">https://csrc.nist.gov/projects/post-quantum-cryptography</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8411">[RFC8411]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span> and <span class="refAuthor">R. Andrews</span>, <span class="refTitle">"IANA Registration for the Cryptographic Algorithm Object Identifier Range"</span>, <span class="seriesInfo">RFC 8411</span>, <span class="seriesInfo">DOI 10.17487/RFC8411</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8411">https://www.rfc-editor.org/rfc/rfc8411</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8419">[RFC8419]</dt>
+      <dd>
+<span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Use of Edwards-Curve Digital Signature Algorithm (EdDSA) Signatures in the Cryptographic Message Syntax (CMS)"</span>, <span class="seriesInfo">RFC 8419</span>, <span class="seriesInfo">DOI 10.17487/RFC8419</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8419">https://www.rfc-editor.org/rfc/rfc8419</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">Much of the structure and text of this document is based on <span>[<a href="#RFC8419" class="cite xref">RFC8419</a>]</span>.  Thanks to Russ Housley, author of that document, for making our work earier. "Copying always makes things easier and less error prone" - <span>[<a href="#RFC8411" class="cite xref">RFC8411</a>]</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">TODO: Hopefully others will help out.  They will be acknowledged here.  And if you've read this far...<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Daniel Van Geest</span></div>
+<div dir="auto" class="left"><span class="org">CryptoNext Security</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:daniel.vangeest.ietf@gmail.com" class="email">daniel.vangeest.ietf@gmail.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Michael Prorock</span></div>
+<div dir="auto" class="left"><span class="org">mesur.io</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mprorock@mesur.io" class="email">mprorock@mesur.io</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Mike Ounsworth</span></div>
+<div dir="auto" class="left"><span class="org">Entrust Limited</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mike.ounsworth@entrust.com" class="email">mike.ounsworth@entrust.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>

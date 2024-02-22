@@ -1,0 +1,433 @@
+
+
+
+
+Network Working Group                                       D. Van Geest
+Internet-Draft                                       CryptoNext Security
+Intended status: Standards Track                              M. Prorock
+Expires: 25 August 2024                                         mesur.io
+                                                            M. Ounsworth
+                                                         Entrust Limited
+                                                        22 February 2024
+
+
+   Use of the ML-DSA Signature Algorithm in the Cryptographic Message
+                              Syntax (CMS)
+                    draft-vangeest-ml-dsa-cms-latest
+
+Abstract
+
+   This document specifies the conventions for using the Module-Lattice-
+   Based Digital Signatures (ML-DSA) algorithm with the Cryptographic
+   Message Syntax (CMS).
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-vangeest-ml-dsa-cms/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/danvangeest/draft-ml-dsa-cms.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 25 August 2024.
+
+Copyright Notice
+
+   Copyright (c) 2024 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Conventions and Definitions
+     2.1.  ASN.1
+   3.  ML-DSA Signature Algorithm
+     3.1.  Algorithm Identifiers
+     3.2.  ML-DSA Algorithm Identifiers
+     3.3.  Message Digest Algorithm Identifiers
+     3.4.  ML-DSA Signatures
+   4.  Signed Data Conventions
+     4.1.  Signed-data Conventions with Signed Attributes
+     4.2.  Signed-data Conventions without Signed Attributes
+   5.  Security Considerations
+   6.  IANA Considerations
+   7.  References
+     7.1.  Normative References
+     7.2.  Informative References
+   Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   Module-Lattice-Based Digital Signatures (ML-DSA) is a quantum-
+   resistant digital signature scheme standardized in [FIPS204] [EDNOTE:
+   [FIPS204-ipd] until officially published] by the US National
+   Institute of Standards and Technology (NIST) PQC project [NIST-PQC].
+   This document specifies the conventions for using ML-DSA with the
+   Cryptographic Message Syntax (CMS) [RFC5652] signed-data content
+   type.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.1.  ASN.1
+
+   CMS values are generated using ASN.1 [X680], using the Basic Encoding
+   Rules (BER) and the Distinguished Encoding Rules (DER) [X690].
+
+3.  ML-DSA Signature Algorithm
+
+   [FIPS204] defines parameter sets for ML-DSA at three security levels:
+   ML-DSA-44, ML-DSA-65, and ML-DSA-87.
+
+   Table 3 in [FIPS204] gives the targeted security strength for the
+   NIST PQC Project [NIST-PQC].  ML-DSA-44 targets category 2 - at least
+   as hard as a collision search on 256-bit hash function, e.g.
+   SHA3-256 [FIPS202].  ML-DSA-65 targets category 3 - at least as hard
+   as a key search on block cipher with 192-bit key, e.g.  AES-192
+   [FIPS197].  ML-DSA-87 targets category 5 - at least as hard as a key
+   search on block cipher with 256-bit key, e.g.  AES-256 [FIPS197].
+
+3.1.  Algorithm Identifiers
+
+   Each algorithm is identified by an object identifier, and the
+   algorithm identifier may contain parameters if needed.
+
+   The ALGORITHM definition is repeated here for convenience:
+
+      ALGORITHM ::= CLASS {
+          &id    OBJECT IDENTIFIER UNIQUE,
+          &Type  OPTIONAL }
+        WITH SYNTAX {
+          OID &id [PARMS &Type] }
+
+3.2.  ML-DSA Algorithm Identifiers
+
+   The ML-DSA signature algorithm is defined in [FIPS204], and the
+   conventions for encoding the public key are defined in
+   [I-D.ietf-lamps-dilithium-certificates].
+
+   The id-ML-DSA-44, id-ML-DSA-65, and id-ML-DSA-87 object identifiers
+   are used to identify ML-DSA public keys in certificates.  The object
+   identifiers are specified in [I-D.ietf-lamps-dilithium-certificates],
+   and they are repeated here for convenience:
+
+      id-ML-DSA-44 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+                country(16) us(840) organization(1) gov(101) csor(3)
+                nistAlgorithm(4) sigAlgs(3) TBD }
+
+      id-ML-DSA-65 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+                country(16) us(840) organization(1) gov(101) csor(3)
+                nistAlgorithm(4) sigAlgs(3) TBD }
+
+      id-ML-DSA-87 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+                country(16) us(840) organization(1) gov(101) csor(3)
+                nistAlgorithm(4) sigAlgs(3) TBD }
+
+3.3.  Message Digest Algorithm Identifiers
+
+   When the signer includes signed attributes, a message digest
+   algorithm is used to compute the message digest on the eContent
+   value.
+
+   ML-DSA uses both SHAKE128 and SHAKE256 [FIPS202] internally as part
+   of the signing operation.
+
+   When using ML-DSA to sign a message digest, Section 7.1 [TODO: make
+   sure this doesn't change] of [FIPS204] requires that the approved
+   hash function or extendable-output function provides at least λ bits
+   of classical security strength against both collision and second
+   preimage attacks.  The values for λ is specified in Table 1 [TODO:
+   make sure this doesn't change] of [FIPS204] and is summarized here in
+   Table 1.
+
+                  +===========+========================+
+                  | Algorithm | λ - collision strength |
+                  +===========+========================+
+                  | ML-DSA-44 | 128                    |
+                  +-----------+------------------------+
+                  | ML-DSA-65 | 192                    |
+                  +-----------+------------------------+
+                  | ML-DSA-87 | 256                    |
+                  +-----------+------------------------+
+
+                  Table 1: ML-DSA λ - collision strength
+
+   ML-DSA uses both SHAKE128 and SHAKE256 [FIPS202] internally as part
+   of the signing operation.  Table 4 of [FIPS202] includes the security
+   strength of SHAKE128 and SHAKE256 and the relevant parts are
+   summarized here in Table 2.
+
+      +==========+=============+====================+==============+
+      | Function | Output Size | Collision Strength | 2nd Preimage |
+      |          |             |                    | Strength     |
+      +==========+=============+====================+==============+
+      | SHAKE128 | d           | min(d/2, 128)      | min(d, 128)  |
+      +----------+-------------+--------------------+--------------+
+      | SHAKE256 | d           | min(d/2, 256)      | min(d, 256)  |
+      +----------+-------------+--------------------+--------------+
+
+                     Table 2: SHAKE security strength
+
+   When signing with ML-DSA-44, the message digest algorithm MUST be
+   SHAKE128.  When signing with ML-DSA-65, the message digest algorithm
+   MUST be SHAKE256.  When signing with ML-DSA-87, the message digest
+   algorithm MUST be SHAKE256.  To avoid complexity in algorithm
+   identifier encodings, the message digest algorithm used for ML-DSA-65
+   is stronger than strictly necessary.
+
+   [RFC8702] defines the use of SHAKE128 and SHAKE258 in CMS.  The
+   object identifiers are reproduced here for convenience:
+
+      id-shake128 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+                country(16) us(840) organization(1) gov(101) csor(3)
+                nistAlgorithm(4) 2 11 }
+
+      id-shake256 OBJECT IDENTIFIER ::= { joint-iso-itu-t(2)
+                country(16) us(840) organization(1) gov(101) csor(3)
+                nistAlgorithm(4) 2 12 }
+
+   As described in [RFC8702], when using the id-shake128 or id-shake256
+   algorithm identifier, the OID encoding MUST omit the parameters field
+   and the output length of SHAKE128 or SHAKE256 as the message digest
+   MUST be 32 or 64 bytes, respectively.
+
+3.4.  ML-DSA Signatures
+
+   The id-ML-DSA-44, id-ML-DSA-65, and id-ML-DSA-87 object identifiers
+   are also used for signature values.  When used to identify signature
+   algorithms, the AlgorithmIdentifier parameters field MUST be absent.
+
+   The data to be signed is processed using ML-DSA, and then a private
+   key operation generates the signature value.  As described in
+   Algorithm 20 [TODO: make sure this doesn't change] of [FIPS204], the
+   sigEncode() algorithm encodes the signature into an opaque byte
+   string.  As described in Section 5.3 of [RFC5652], the signature
+   value is ASN.1 encoded as an OCTET STRING and included in the
+   signature field of SignerInfo.
+
+4.  Signed Data Conventions
+
+   The processing depends on whether the signer includes signed
+   attributes.
+
+   The inclusion of signed attributes is preferred, but the conventions
+   for signed-data without signed attributes are provided for
+   completeness.
+
+4.1.  Signed-data Conventions with Signed Attributes
+
+   [ EDNOTE: I based this section and the next on 3.1 and 3.2 from RFC
+   8419.  Should it instead be based on section 4 from draft-ietf-lamps-
+   cms-sphincs-plus? ]
+
+   The SignedData digestAlgorithms field includes the identifiers of the
+   message digest algorithms used by one or more signer.  There MAY be
+   any number of elements in the collection, including zero.  When
+   signing with ML-DSA-44, the digestAlgorithm SHOULD include id-
+   shake128.  When signing with ML-DSA-65 or ML-DSA-87, the
+   digestAlgorithm SHOULD include id-shake256.  In all cases the
+   algorithm parameters field MUST be absent.
+
+   The SignerInfo digestAlgorithm field includes the identifier of the
+   message digest algorithms used by the signer.  When signing with ML-
+   DSA-44, the digestAlgorithm MUST be id-shake128.  When signing with
+   ML-DSA-65 or ML-DSA-87, the digestAlgorithm MUST be id-shake256.  In
+   all cases the algorithm parameters field MUST be absent.
+
+   The SignerInfo signedAttributes MUST include the message-digest
+   attribute as specified in Section 11.2 of [RFC5652].  When signing
+   with ML-DSA-44, the message-digest attribute MUST contain the message
+   digest computed over the eContent value using SHAKE128 with 32 bytes
+   of output.  When signing with ML-DSA-65 or ML-DSA-87, the message-
+   digest attribute MUST contain the message digest computed over the
+   eContent value using SHAKE256 with 64 bytes of output.
+
+   The SignerInfo signatureAlgorithm field MUST contain either id-ML-
+   DSA-44, id-ML-DSA-65, or id-ML-DSA-87, depending on the ML-DSA
+   parameter set that was used by the signer.  The algorithm parameters
+   field MUST be absent.
+
+   The SignerInfo signature field contains the octet string resulting
+   from the ML-DSA private key signing operation.
+
+4.2.  Signed-data Conventions without Signed Attributes
+
+   The SignedData digestAlgorithms field includes the identifiers of the
+   message digest algorithms used by one or more signer.  There MAY be
+   any number of elements in the collection, including zero.  When
+   signing with ML-DSA-44, the list of identifiers MAY include id-
+   shake128, and if present, the algorithm parameters field MUST be
+   absent.  When signing with ML-DSA-65 or ML-DSA-87, the list of
+   identifiers MAY include id-shake256, and if present, the algorithm
+   parameters field MUST be absent.
+
+   The SignerInfo digestAlgorithm field includes the identifier of the
+   message digest algorithms used by the signer.  When signing with ML-
+   DSA-44, the digestAlgorithm MUST be id-shake128.  When signing with
+   ML-DSA-65 or ML-DSA-87, the digestAlgorithm MUST be id-shake256.  In
+   all cases the algorithm parameters field MUST be absent.
+
+     NOTE: Either id-sha512 or id-shake256 is used as part to the
+     private key signing operation.  However, the private key signing
+     operation does not take a message digest computed with one of
+     these algorithms as an input.
+
+   The SignerInfo signatureAlgorithm field MUST contain either id-ML-
+   DSA-44, id-ML-DSA-65, or id-ML-DSA-87, depending on the ML-DSA
+   parameter set that was used by the signer.  The algorithm parameters
+   field MUST be absent.
+
+   The SignerInfo signature field contains the octet string resulting
+   from the ML-DSA private key signing operation.
+
+5.  Security Considerations
+
+   The Security Considerations section of [RFC5652] applies to this
+   specification as well.
+
+   ML-DSA is specified for use in Public Key Infrastructure X.509 (PKIX)
+   certificates and Certificate Revocation Lists (CRLs) in
+   [I-D.ietf-lamps-dilithium-certificates].  The Security Considerations
+   section from there apply to this specification as well.
+
+6.  IANA Considerations
+
+   This document has no IANA actions.
+
+7.  References
+
+7.1.  Normative References
+
+   [FIPS202]  Dworkin, M., Dworkin, M. J., and NIST, "SHA-3 Standard:
+              Permutation-Based Hash and Extendable-Output Functions",
+              FIPS PUB 202, NIST Federal Information Processing
+              Standards Publications 202, DOI 10.6028/nist.fips.202,
+              DOI 10.6028/NIST.FIPS.202, August 2015,
+              <http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf>.
+
+   [FIPS204]  "TBD", n.d..
+
+   [FIPS204-ipd]
+              National Institute of Standards and Technology (NIST),
+              "Module-Lattice-Based Digital Signature Standard", 24
+              August 2023, <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.204.ipd.pdf>.
+
+   [I-D.ietf-lamps-dilithium-certificates]
+              Massimo, J., Kampanakis, P., Turner, S., and B.
+              Westerbaan, "Internet X.509 Public Key Infrastructure:
+              Algorithm Identifiers for ML-DSA", Work in Progress,
+              Internet-Draft, draft-ietf-lamps-dilithium-certificates-
+              03, 5 February 2024,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
+              dilithium-certificates-03>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC5652]  Housley, R., "Cryptographic Message Syntax (CMS)", STD 70,
+              RFC 5652, DOI 10.17487/RFC5652, September 2009,
+              <https://www.rfc-editor.org/rfc/rfc5652>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [RFC8702]  Kampanakis, P. and Q. Dang, "Use of the SHAKE One-Way Hash
+              Functions in the Cryptographic Message Syntax (CMS)",
+              RFC 8702, DOI 10.17487/RFC8702, January 2020,
+              <https://www.rfc-editor.org/rfc/rfc8702>.
+
+   [X680]     International Telephone and Telegraph Consultative
+              Committee, "Abstract Syntax Notation One (ASN.1):
+              Specification of basic notation", CCITT Recommendation
+              X.680, July 2002.
+
+   [X690]     International Telephone and Telegraph Consultative
+              Committee, "ASN.1 encoding rules: Specification of basic
+              encoding Rules (BER), Canonical encoding rules (CER) and
+              Distinguished encoding rules (DER)", CCITT Recommendation
+              X.690, July 2002.
+
+7.2.  Informative References
+
+   [FIPS197]  NIST, "Advanced encryption standard (AES)", NIST Federal
+              Information Processing Standards Publications 197,
+              DOI 10.6028/NIST.FIPS.197, November 2001,
+              <https://nvlpubs.nist.gov/nistpubs/FIPS/
+              NIST.FIPS.197.pdf>.
+
+   [NIST-PQC] National Institute of Standards and Technology, "Post-
+              Quantum Cryptography Project", 20 December 2016,
+              <https://csrc.nist.gov/projects/post-quantum-
+              cryptography>.
+
+   [RFC8411]  Schaad, J. and R. Andrews, "IANA Registration for the
+              Cryptographic Algorithm Object Identifier Range",
+              RFC 8411, DOI 10.17487/RFC8411, August 2018,
+              <https://www.rfc-editor.org/rfc/rfc8411>.
+
+   [RFC8419]  Housley, R., "Use of Edwards-Curve Digital Signature
+              Algorithm (EdDSA) Signatures in the Cryptographic Message
+              Syntax (CMS)", RFC 8419, DOI 10.17487/RFC8419, August
+              2018, <https://www.rfc-editor.org/rfc/rfc8419>.
+
+Acknowledgments
+
+   Much of the structure and text of this document is based on
+   [RFC8419].  Thanks to Russ Housley, author of that document, for
+   making our work earier.  "Copying always makes things easier and less
+   error prone" - [RFC8411].
+
+   TODO: Hopefully others will help out.  They will be acknowledged
+   here.  And if you've read this far...
+
+Authors' Addresses
+
+   Daniel Van Geest
+   CryptoNext Security
+   Email: daniel.vangeest.ietf@gmail.com
+
+
+   Michael Prorock
+   mesur.io
+   Email: mprorock@mesur.io
+
+
+   Mike Ounsworth
+   Entrust Limited
+   Email: mike.ounsworth@entrust.com
